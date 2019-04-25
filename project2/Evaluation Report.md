@@ -242,17 +242,109 @@ All possible integer optional arguments has to be positive.
 
 
 #### Running the server without sudo 
+```
 $ python3 run_server.py -L /tmp/log.txt adkjfladf
 server ready!
 Listening on port: 1338
+```
 
+#### Printing the entire usage message properly when required
+```
+python3 fuzz.py -h
+usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
+               [-TF TFILE_NAME] [-AF AFILE_NAME] [-PF PAYLOAD_FILE] [-I] [-T]
+               [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
+               [-L LEN] [-Z APP_LOG_FILE] [-tseq] [-tack] [-tdataofs]
+               [-treserved] [-tflags] [-twindow] [-tchksum] [-turgptr]
+               [-toptions] [-ilen] [-iproto] [-iihl] [-iflags] [-ifrag]
+               [-ittl] [-itos] [-iid] [-ichksum] [-iversion]
+
+Fuzzing IP, Transport(TCP), Payloads with scapy.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -S SRC, -src SRC      select source ip address
+  -D DST, -dst DST      select destination ip address
+  -SP SP, -sport SP     select source port
+  -DP DP, -dport DP     select destination port
+  -IF IFILE_NAME, -ifile IFILE_NAME
+                        select file to read the fuzzing data for ip layer
+  -TF TFILE_NAME, -tfile TFILE_NAME
+                        select file to read the fuzzing data for tcp layer
+  -AF AFILE_NAME, -afile AFILE_NAME
+                        select file to read the fuzzing data for application
+                        layer
+  -PF PAYLOAD_FILE, -payloadfile PAYLOAD_FILE
+                        select file to read the default payload data
+  -I, -ip               run fuzzing for IP layer
+  -T, -tcp              run fuzzing for TCP layer
+  -A, -app              run fuzzing for application layer
+  -tA, -tall            run fuzzing for all fields for TCP layer
+  -iA, -iall            run fuzzing for all fields for IP layer
+  -N N, -num N          number of tests to run
+  -v V, -verbose V      set verbosity level
+  -amin AMIN            minimum length for payload
+  -amax AMAX            maximum length for payload
+  -L LEN, -len LEN      length of the payload
+  -Z APP_LOG_FILE, -log-app-payload APP_LOG_FILE
+                        store app layer payload of each app layer packet
+                        fuzzed in a file
+  -tseq                 Add seq to TCP fields for fuzzing
+  -tack                 Add ack to TCP fields for fuzzing
+  -tdataofs             Add dataofs to TCP fields for fuzzing
+  -treserved            Add reserved to TCP fields for fuzzing
+  -tflags               Add flags to TCP fields for fuzzing
+  -twindow              Add window to TCP fields for fuzzing
+  -tchksum              Add chksum to TCP fields for fuzzing
+  -turgptr              Add urgptr to TCP fields for fuzzing
+  -toptions             Add options to TCP fields for fuzzing
+  -ilen                 Add len to IP fields for fuzzing
+  -iproto               Add proto to IP fields for fuzzing
+  -iihl                 Add ihl to IP fields for fuzzing
+  -iflags               Add flags to IP fields for fuzzing
+  -ifrag                Add frag to IP fields for fuzzing
+  -ittl                 Add ttl to IP fields for fuzzing
+  -itos                 Add tos to IP fields for fuzzing
+  -iid                  Add id to IP fields for fuzzing
+  -ichksum              Add chksum to IP fields for fuzzing
+  -iversion             Add version to IP fields for fuzzing
+
+```
+
+#### Specifying an input file for ip layer tests without the ip layer file fuzzing included
+```
+python3 fuzz.py -IFILE_NAME
+usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
+               [-TF TFILE_NAME] [-AF AFILE_NAME] [-PF PAYLOAD_FILE] [-I] [-T]
+               [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
+               [-L LEN] [-Z APP_LOG_FILE] [-tseq] [-tack] [-tdataofs]
+               [-treserved] [-tflags] [-twindow] [-tchksum] [-turgptr]
+               [-toptions] [-ilen] [-iproto] [-iihl] [-iflags] [-ifrag]
+               [-ittl] [-itos] [-iid] [-ichksum] [-iversion]
+fuzz.py: error: argument -I/-ip: ignored explicit argument 'FILE_NAME'
+```
+
+### Mismatches between layer fuzzing and arguments given
+```
+python3 fuzz.py -I -TFILE_NAME
+usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
+               [-TF TFILE_NAME] [-AF AFILE_NAME] [-PF PAYLOAD_FILE] [-I] [-T]
+               [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
+               [-L LEN] [-Z APP_LOG_FILE] [-tseq] [-tack] [-tdataofs]
+               [-treserved] [-tflags] [-twindow] [-tchksum] [-turgptr]
+               [-toptions] [-ilen] [-iproto] [-iihl] [-iflags] [-ifrag]
+               [-ittl] [-itos] [-iid] [-ichksum] [-iversion]
+fuzz.py: error: argument -T/-tcp: ignored explicit argument 'FILE_NAME'
+```
+**All invalid combinations of ip/tcp/app layer fuzzing and ip/tcp/app layer arguments were tested in this case but are not included for brevity**
 
 ### The following stress tests passed with minor issues
 
 #### Exits without printing an error message when a non integer is used as source port
 
-* `python3 fuzz.py -A -S 127.0.0.1 -D 127.0.0.1 -DP 1338 -SP NONSES` -- (-3)
-* **This is true about all command line parameter checking including invalid parameters. There are many tests due to the same mistake in error handling that I am not including here** 
+* `python3 fuzz.py -A -S 127.0.0.1 -D 127.0.0.1 -DP 1338 -SP NONSES` 
+* **This is true about all command line parameter checking including invalid parameters. There are many tests due to the same mistake in error handling that I am not including here (invalid filepaths etc.)** 
+(-3)
 
 #### Server doesn't throw an error when invalid hex is passed in as the search pattern 
 ```
@@ -284,8 +376,7 @@ $ python3 fuzz.py -A -AF ./default_payload -S 127.0.0.1 -D 127.0.0.1 -DP 1338 -S
 ### The following stress tests passed with major issues
 We found no major issues like core dumps or stacktraces
 
-\<The following types of tests passed with no issues or minor issues (and explain the issues).\>
-\<The following tests failed along with exact inputs and relevant output.\>
+
 
 ## Part 5: Clarity of the Code/Comments
 
