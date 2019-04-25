@@ -244,17 +244,19 @@ All possible integer optional arguments has to be positive.
 
 
 #### Running the server without sudo 
+```
 $ python3 run_server.py -L /tmp/log.txt adkjfladf
 server ready!
 Listening on port: 1338
-
+```
 
 ### The following stress tests passed with minor issues
 
 #### Exits without printing an error message when a non integer is used as source port
 
-* `python3 fuzz.py -A -S 127.0.0.1 -D 127.0.0.1 -DP 1338 -SP NONSES` -- (-3)
-* **This is true about all command line parameter checking including invalid parameters. There are many tests due to the same mistake in error handling that I am not including here** 
+* `python3 fuzz.py -A -S 127.0.0.1 -D 127.0.0.1 -DP 1338 -SP NONSES` 
+* **This is true about all command line parameter checking including invalid parameters. There are many tests due to the same mistake in error handling that I am not including here (invalid filepaths etc.)** 
+(-3)
 
 #### Server doesn't throw an error when invalid hex is passed in as the search pattern 
 ```
@@ -286,8 +288,7 @@ $ python3 fuzz.py -A -AF ./default_payload -S 127.0.0.1 -D 127.0.0.1 -DP 1338 -S
 ### The following stress tests passed with major issues
 We found no major issues like core dumps or stacktraces
 
-\<The following types of tests passed with no issues or minor issues (and explain the issues).\>
-\<The following tests failed along with exact inputs and relevant output.\>
+
 
 ## Part 5: Clarity of the Code/Comments
 
