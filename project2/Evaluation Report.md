@@ -195,6 +195,19 @@ server ready!
 Listening on port: 1338
 ```
 
+#### Passing negative integer arguments into the command line
+```
+sudo python3 fuzz.py -amax -1
+All possible integer optional arguments has to be positive.
+```
+
+
+#### Running the server without sudo 
+$ python3 run_server.py -L /tmp/log.txt adkjfladf
+server ready!
+Listening on port: 1338
+
+
 ### The following stress tests passed with minor issues
 
 #### Exits without printing an error message when a non integer is used as source port
@@ -220,6 +233,13 @@ sudo python3 fuzz.py -A -AF ./default_payload -S 127.0.0.1 -D 127.0.0.1 -DP 1338
 "000
 " cannot be parsed as hex
 ``` 
+(-1.5)
+
+#### Running the fuzzer without sudo
+
+```
+$ python3 fuzz.py -A -AF ./default_payload -S 127.0.0.1 -D 127.0.0.1 -DP 1338 -SP 1337 -Z /tmp/log.txt 
+```
 (-1.5)
 
 ### The following stress tests passed with major issues
