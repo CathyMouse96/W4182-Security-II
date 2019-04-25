@@ -457,9 +457,128 @@ Server code is relatively short and it is also easy to understand. We do recomme
 
 ## Part 6: Code Modification
 
-TODO: Code snippets, Wireshark display (maybe)
+We made the following modifications to the code to add the logging functionality:
 
+Original fuzzer's `fuzz.py`:
 
+```python
+if args.A:
+		appfuzz = APPFuzzer(source=args.src, dest=args.dst, sport=sp, dport=dp, verbose=v)
+		if args.Afile_name:
+				appfuzz.fuzz(test=N, size=len, file=args.Afile_name, min_len=amin, max_len=amax)
+		else:
+				appfuzz.fuzz(test=N, size=len, min_len=amin, max_len=amax)
+```
+
+Modified fuzzer's `fuzz.py`:
+
+```python
+if args.A:
+		appfuzz = APPFuzzer(source=args.src, dest=args.dst, sport=sp, dport=dp, verbose=v,app_log_file=args.app_log_file)
+		if args.Afile_name:
+				appfuzz.fuzz(test=N, size=len, file=args.Afile_name, min_len=amin, max_len=amax)
+		else:
+				appfuzz.fuzz(test=N, size=len, min_len=amin, max_len=amax)
+```
+
+We also added an argument to the argument parser:
+
+```python
+parser.add_argument('-Z', "-log-app-payload", action='store', default=None, help='store app layer payload of each app layer packet fuzzed in a file', dest='app_log_file')
+```
+
+Original fuzzer's `src/app_fuzzer.py`:
+
+```python
+def __init__(self,source="127.0.0.1", dest="127.0.0.1", sport=1337, dport=1338, verbose=0):
+  	self._pckt = Ether()/IP(dst=dest,src=source)/TCP()
+    self.client = Client(source,dest,sport,dport,verbose=verbose)
+    self.verbose = verbose
+```
+
+```python
+print("sending packets to the server...")
+self.client.connect()
+for pckt in pckts:
+		try:
+				self.client.send(pckt)
+				time.sleep(2)
+		except OSError as err:
+				print(err)
+```
+
+Modified fuzzer's `src/app_fuzzer.py`:
+
+```python
+def __init__(self,source="127.0.0.1", dest="127.0.0.1", sport=1337, dport=1338, verbose=0, app_log_file=None):
+		print(app_log_file)
+    self._pckt = Ether()/IP(dst=dest,src=source)/TCP()
+    self.client = Client(source,dest,sport,dport,verbose=verbose)
+    self.verbose = verbose
+    self.app_log_file = app_log_file
+```
+
+```python
+print("Log file is: {}".format(self.app_log_file))
+print("sending packets to the server...")
+self.client.connect()
+for pckt in pckts:
+		try:
+				self.client.send(pckt)
+				if self.app_log_file is not None:
+						with open(self.app_log_file, 'a') as log:
+								log.write(bytearray(pckt).hex()+ "\n")
+        time.sleep(2)
+    except OSError as err:
+        print(err)
+```
+
+Original server's `run_server.py`:
+
+```python
+valid = 0
+invalid = 0
+```
+
+```python
+# max data length = 128 bytes
+data = str(conn.recv(128))
+
+#server doesn't accept empty payload
+...
+
+#send valid/invalid
+...
+```
+
+Modified server's `run_server.py`:
+
+```python
+valid = 0
+invalid = 0
+
+log_file = None
+if len(sys.argv) > 2 and sys.argv[1] == '-L':
+    log_file = sys.argv[2]
+```
+
+```python
+# max data length = 128 bytes
+rawdata = conn.recv(128)
+data = str(rawdata)
+
+#server doesn't accept empty payload
+...
+
+#send valid/invalid
+...
+
+if log_file is not None:
+		with open(log_file, "a") as f:
+				f.write(bytearray(rawdata).hex() + "\n")
+```
+
+Then we tested the logging functionality:
 
 Fuzzer command: `sudo python3 fuzz.py -A -N 2 -D 160.39.6.141 -DP 1349 -S 160.39.6.46 -SP 1350 -Z log.txt`
 
@@ -474,3 +593,4 @@ Server results:
 ![WechatIMG12](/Users/cmouse/Documents/Columbia Spring 2019/W4182 Security II/project2/img/WechatIMG12.jpeg)
 
 As we can see, both the server and the fuzzer logs the packets received/sent in the specified log file. Thus the logging functionality is working correctly!
+
