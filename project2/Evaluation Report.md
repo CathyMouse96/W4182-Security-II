@@ -250,6 +250,69 @@ server ready!
 Listening on port: 1338
 ```
 
+#### Printing the entire usage message properly when required
+```
+python3 fuzz.py -h
+usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
+               [-TF TFILE_NAME] [-AF AFILE_NAME] [-PF PAYLOAD_FILE] [-I] [-T]
+               [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
+               [-L LEN] [-Z APP_LOG_FILE] [-tseq] [-tack] [-tdataofs]
+               [-treserved] [-tflags] [-twindow] [-tchksum] [-turgptr]
+               [-toptions] [-ilen] [-iproto] [-iihl] [-iflags] [-ifrag]
+               [-ittl] [-itos] [-iid] [-ichksum] [-iversion]
+
+Fuzzing IP, Transport(TCP), Payloads with scapy.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -S SRC, -src SRC      select source ip address
+  -D DST, -dst DST      select destination ip address
+  -SP SP, -sport SP     select source port
+  -DP DP, -dport DP     select destination port
+  -IF IFILE_NAME, -ifile IFILE_NAME
+                        select file to read the fuzzing data for ip layer
+  -TF TFILE_NAME, -tfile TFILE_NAME
+                        select file to read the fuzzing data for tcp layer
+  -AF AFILE_NAME, -afile AFILE_NAME
+                        select file to read the fuzzing data for application
+                        layer
+  -PF PAYLOAD_FILE, -payloadfile PAYLOAD_FILE
+                        select file to read the default payload data
+  -I, -ip               run fuzzing for IP layer
+  -T, -tcp              run fuzzing for TCP layer
+  -A, -app              run fuzzing for application layer
+  -tA, -tall            run fuzzing for all fields for TCP layer
+  -iA, -iall            run fuzzing for all fields for IP layer
+  -N N, -num N          number of tests to run
+  -v V, -verbose V      set verbosity level
+  -amin AMIN            minimum length for payload
+  -amax AMAX            maximum length for payload
+  -L LEN, -len LEN      length of the payload
+  -Z APP_LOG_FILE, -log-app-payload APP_LOG_FILE
+                        store app layer payload of each app layer packet
+                        fuzzed in a file
+  -tseq                 Add seq to TCP fields for fuzzing
+  -tack                 Add ack to TCP fields for fuzzing
+  -tdataofs             Add dataofs to TCP fields for fuzzing
+  -treserved            Add reserved to TCP fields for fuzzing
+  -tflags               Add flags to TCP fields for fuzzing
+  -twindow              Add window to TCP fields for fuzzing
+  -tchksum              Add chksum to TCP fields for fuzzing
+  -turgptr              Add urgptr to TCP fields for fuzzing
+  -toptions             Add options to TCP fields for fuzzing
+  -ilen                 Add len to IP fields for fuzzing
+  -iproto               Add proto to IP fields for fuzzing
+  -iihl                 Add ihl to IP fields for fuzzing
+  -iflags               Add flags to IP fields for fuzzing
+  -ifrag                Add frag to IP fields for fuzzing
+  -ittl                 Add ttl to IP fields for fuzzing
+  -itos                 Add tos to IP fields for fuzzing
+  -iid                  Add id to IP fields for fuzzing
+  -ichksum              Add chksum to IP fields for fuzzing
+  -iversion             Add version to IP fields for fuzzing
+
+```
+
 ### The following stress tests passed with minor issues
 
 #### Exits without printing an error message when a non integer is used as source port
