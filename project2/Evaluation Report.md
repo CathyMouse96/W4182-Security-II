@@ -313,6 +313,33 @@ optional arguments:
 
 ```
 
+#### Specifying an input file for ip layer tests without the ip layer file fuzzing included
+```
+python3 fuzz.py -IFILE_NAME
+usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
+               [-TF TFILE_NAME] [-AF AFILE_NAME] [-PF PAYLOAD_FILE] [-I] [-T]
+               [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
+               [-L LEN] [-Z APP_LOG_FILE] [-tseq] [-tack] [-tdataofs]
+               [-treserved] [-tflags] [-twindow] [-tchksum] [-turgptr]
+               [-toptions] [-ilen] [-iproto] [-iihl] [-iflags] [-ifrag]
+               [-ittl] [-itos] [-iid] [-ichksum] [-iversion]
+fuzz.py: error: argument -I/-ip: ignored explicit argument 'FILE_NAME'
+```
+
+### Mismatches between layer fuzzing and arguments given
+```
+python3 fuzz.py -I -TFILE_NAME
+usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
+               [-TF TFILE_NAME] [-AF AFILE_NAME] [-PF PAYLOAD_FILE] [-I] [-T]
+               [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
+               [-L LEN] [-Z APP_LOG_FILE] [-tseq] [-tack] [-tdataofs]
+               [-treserved] [-tflags] [-twindow] [-tchksum] [-turgptr]
+               [-toptions] [-ilen] [-iproto] [-iihl] [-iflags] [-ifrag]
+               [-ittl] [-itos] [-iid] [-ichksum] [-iversion]
+fuzz.py: error: argument -T/-tcp: ignored explicit argument 'FILE_NAME'
+```
+**All invalid combinations of ip/tcp/app layer fuzzing and ip/tcp/app layer arguments were tested in this case but are not included for brevity**
+
 ### The following stress tests passed with minor issues
 
 #### Exits without printing an error message when a non integer is used as source port
