@@ -14,13 +14,14 @@ Link to project: <https://github.com/sophiay98/4182_fuzzer>
 
 Here are the ratings we assigned for each criteria. You can find more specific explanations in Part 1 to 5. In Part 6, we modified the code to add logging features for both the fuzzer and the server.
 
-| Criteria                     | Rating  |
-| ---------------------------- | ------- |
-| Installation                 | 9/10    |
-| User Guide                   | 9/10    |
-| Program functionality        | TODO/50 |
-| Error handling               | TODO/20 |
-| Clarity of the code/comments | 10/10   |
+| Criteria                     | Rating   |
+| ---------------------------- | -------- |
+| Installation                 | 9/10     |
+| User Guide                   | 9/10     |
+| Program functionality        | 44/50    |
+| Error handling               | 12.5/20  |
+| Clarity of the code/comments | 10/10    |
+| Total                        | 84.5/100 |
 
 ## Part 1: Installation
 
@@ -179,17 +180,29 @@ When testing the server, we are using the application layer fuzzer to send packe
 
 
 
-**(2) Match with correct patterns.**
+**(2) Match with correct patterns. — Failed**
 
+Command: `sudo python3 fuzz.py -A -afile default_payload_old -D 160.39.6.141 -DP 1353 -S 160.39.6.46 -SP 1354`
 
+Result: the server marks the payload as invalid, while it should have been valid, so we are **deducting 2 points**.
 
-**(3) Not match with incorrect patterns.**
+![WechatIMG18](/Users/cmouse/Documents/Columbia Spring 2019/W4182 Security II/project2/img/WechatIMG18.jpeg)
 
+**(3) Not match with incorrect patterns. — No issues**
 
+Command: `sudo python3 fuzz.py -A -afile default_payload -D 160.39.6.141 -DP 1353 -S 160.39.6.46 -SP 1354`
 
-**(4) Send appropriate response to client.**
+Result: the server marks the payload as invalid.
 
+**(4) Send appropriate response to client. — Failed**
 
+Command: `sudo python3 fuzz.py -A -afile default_payload_old -D 160.39.6.141 -DP 1353 -S 160.39.6.46 -SP 1354`
+
+Result: As we can see from the screenshots, `default_payload_old` contains the same pattern as `src/pattern.txt`. However, the server sends `0xff0xff0xff0xff` to the client. This is the same issue as 3, so we will not deduct points twice.
+
+![WechatIMG17](/Users/cmouse/Documents/Columbia Spring 2019/W4182 Security II/project2/img/WechatIMG17.jpeg)
+
+![WechatIMG18](/Users/cmouse/Documents/Columbia Spring 2019/W4182 Security II/project2/img/WechatIMG18.jpeg)
 
 ## Part 4: Error Handling
 
