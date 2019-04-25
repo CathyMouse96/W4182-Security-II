@@ -68,7 +68,7 @@ We performed a series of tests on the fuzzer. First, we tested the general funct
 
 The following types of tests passed with no issues or minor issues:
 
-**(1) General: specifying the destination address and port.**
+**(1) General: specifying the destination address and port. — No issues**
 
 Command: `sudo python3 fuzz.py -I -ittl -D 160.39.6.141 -DP 1338`
 
@@ -76,7 +76,7 @@ Result: packets are being sent to the specified destination address and port (se
 
 ![WechatIMG10](/Users/cmouse/Documents/Columbia Spring 2019/W4182 Security II/project2/img/WechatIMG10.jpeg)
 
-**(2) General: including a default payload.**
+**(2) General: including a default payload. — No issues**
 
 Command: `sudo python3 fuzz.py -I -ittl -D 160.39.6.141 -DP 1338`
 
@@ -118,19 +118,60 @@ Command:
 
 Result:
 
-**(9) Application layer: run default set of tests.**
+**(9) Application layer: run default set of tests. — Minor issues**
 
-Command: `sudo python3 fuzz.py -A -amin 4 -amax 16 -N 10 -D 160.39.6.141 -DP 1343 -S 160.39.6.46 -SP 1340`
+Command: `sudo python3 fuzz.py -A -amin 4 -amax 16 -N 10 -D 160.39.6.141 -DP 1343 -S 160.39.6.46 -SP 1344`
 
-**(10) Application layer: run custom set of tests.**
+Result: This is supposed to generate 10 random packets with payload lengths between 4 to 16 bytes. However, we found that the packets generated all have 128 bytes for payloads. This can be seen in the screenshot below. So we think the command line arguments for `amin` and `amax` are not working, and we are **deducting 1 point**.
 
-**(11) Application layer: receive and process server's response.**
+![WechatIMG13](/Users/cmouse/Documents/Columbia Spring 2019/W4182 Security II/project2/img/WechatIMG13.jpeg)
 
+**(10) Application layer: receive and process server's response. — No issues**
 
+Command: `sudo python3 fuzz.py -A -amin 4 -amax 16 -N 10 -D 160.39.6.141 -DP 1343 -S 160.39.6.46 -SP 1344`
 
-None of the tests failed completely.
+Result:
 
-In general, this fuzzer was able to pass most of the tests we performed.
+```
+sending packets to the server...
+Connected to 160.39.6.141
+finished sending
+total count: 10
+valid count: 0
+invalid count: 10
+```
+
+The following test failed:
+
+**(1) Application layer: run custom set of tests. — Failed**
+
+Command: `sudo python3 fuzz.py -A -afile custom_payloads -D 160.39.6.141 -DP 1344 -S 160.39.6.46 -SP 1343`
+
+Test file:
+
+```
+0102030405
+aabbcc
+0a0b0c0d
+```
+
+Result:
+
+```
+"0102030405
+" cannot be parsed as hex
+continue parsing the remaining of the file ./custom_payloads ...
+"aabbcc
+" cannot be parsed as hex
+continue parsing the remaining of the file ./custom_payloads ...
+"0a0b0c0d
+" cannot be parsed as hex
+continue parsing the remaining of the file ./custom_payloads ...
+```
+
+We are **deducting 3 points** for this issue.
+
+This fuzzer was able to pass most of the tests we performed, but 4 points were deducted in total for issues with application layer fuzzing.
 
 ### Server Functionality
 
