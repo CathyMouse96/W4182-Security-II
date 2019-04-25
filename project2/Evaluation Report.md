@@ -162,6 +162,39 @@ When testing the server, we are using the application layer fuzzer to send packe
 "aaaa!
 " cannot be parsed as hex` 
 ```
+
+#### Running the fuzzer with invalid arguments
+```
+$ sudo python3 fuzz.py --garbage
+usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
+               [-TF TFILE_NAME] [-AF AFILE_NAME] [-PF PAYLOAD_FILE] [-I] [-T]
+               [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
+               [-L LEN] [-Z APP_LOG_FILE] [-tseq] [-tack] [-tdataofs]
+               [-treserved] [-tflags] [-twindow] [-tchksum] [-turgptr]
+               [-toptions] [-ilen] [-iproto] [-iihl] [-iflags] [-ifrag]
+               [-ittl] [-itos] [-iid] [-ichksum] [-iversion]
+fuzz.py: error: unrecognized arguments: --garbage
+```
+
+#### Running the fuzzer with no arguments 
+```
+$ sudo python3 fuzz.py
+usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
+               [-TF TFILE_NAME] [-AF AFILE_NAME] [-PF PAYLOAD_FILE] [-I] [-T]
+               [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
+               [-L LEN] [-Z APP_LOG_FILE] [-tseq] [-tack] [-tdataofs]
+               [-treserved] [-tflags] [-twindow] [-tchksum] [-turgptr]
+               [-toptions] [-ilen] [-iproto] [-iihl] [-iflags] [-ifrag]
+               [-ittl] [-itos] [-iid] [-ichksum] [-iversion]
+```
+
+#### Running the server with invalid arguments
+```
+python3 run_server.py -L /tmp/log.txt adkjfladf
+server ready!
+Listening on port: 1338
+```
+
 ### The following stress tests passed with minor issues
 
 #### Exits without printing an error message when a non integer is used as source port
@@ -177,7 +210,7 @@ $ python3 run_server.py -L /tmp/log.txt
 server ready!
 Listening on port: 1338
 ``` 
--1.5
+(-1.5)
 
 #### Fuzzer Can't read valid hex in a file 
 
@@ -187,7 +220,7 @@ sudo python3 fuzz.py -A -AF ./default_payload -S 127.0.0.1 -D 127.0.0.1 -DP 1338
 "000
 " cannot be parsed as hex
 ``` 
--- (-1.5)
+(-1.5)
 
 ### The following stress tests passed with major issues
 We found no major issues like core dumps or stacktraces
