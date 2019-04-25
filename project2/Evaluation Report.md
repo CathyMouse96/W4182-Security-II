@@ -56,12 +56,6 @@ Overall, the fuzzer instructions are clear and cover each layer and most of them
 
 ## Part 3: Program Functionality
 
-TODO
-
-\<Summary of tests performed\>
-\<The following types of tests passed with no issues or minor issues (and explain the issues).\>
-\<The following tests failed. Include exact inputs and relevant output.\>
-
 ### Fuzzer Functionality
 
 We performed a series of tests on the fuzzer. First, we tested the general functionality, which included specifying the destination address and port and including a default payload. Second, we tested the IP, TCP and application layers separately. The specific tests are described below in detail.
@@ -82,41 +76,45 @@ Command: `sudo python3 fuzz.py -I -ittl -D 160.39.6.141 -DP 1338`
 
 Result: the packets sent include the default payload (see screenshot for 1).
 
-**(3) IP layer: fuzzing all fields.**
+**(3) IP layer: fuzzing all fields. — No issues**
 
 Command: `sudo python3 fuzz.py -I -D 160.39.6.141 -DP 1338`
 
-Result:
+Result: all IP header fields are fuzzed. Screenshot not included, because the packets cannot be displayed in one screenshot (there are over 200000 packets!).
 
-**(4) IP layer: run default set of tests (all values).**
+**(4) IP layer: run default set of tests (all values). — No issues**
 
-Command: 
+Command: `sudo python3 fuzz.py -I -ittl -D 160.39.6.141 -DP 1338`
 
-Result:
+Result: This test differs from 3 in that we are only testing a subset of fields, but we want to make sure all possible values are fuzzed. In this example we are performing a test on the `ttl` field. We can see that the `ttl` field is increasing and every possible value is tested.
 
-**(5) IP layer: run custom set of tests.**
+![WechatIMG15](/Users/cmouse/Documents/Columbia Spring 2019/W4182 Security II/project2/img/WechatIMG15.jpeg)
 
-Command: 
+**(5) IP layer: run custom set of tests. — No issues**
 
-Result:
+Command: `sudo python3 fuzz.py -I -ifile ip.csv -D 160.39.6.141 -DP 1338`
 
-**(6) TCP layer: fuzzing all fields.**
+Result: the packets specified in `ip.csv` are sent to the destination address and port.
 
-Command: 
+**(6) TCP layer: fuzzing all fields. — No issues**
 
-Result:
+Command: `sudo python3 fuzz.py -T -tall`
+
+Result: all TCP header fields are fuzzed. Screenshot not included, because the packets cannot be displayed in one screenshot (there are over 200000 packets!).
 
 **(7) TCP layer: run default set of tests (all values).**
 
-Command: 
+Command: `sudo python3 fuzz.py -T -tflags`
 
-Result:
+Result: This test differs from 6 in that we are only testing a subset of fields, but we want to make sure all possible values are fuzzed. In this example we are performing a test on the `flags` field. We can see that every combination of TCP flags are being tested.
+
+![WechatIMG16](/Users/cmouse/Documents/Columbia Spring 2019/W4182 Security II/project2/img/WechatIMG16.jpeg)
 
 **(8) TCP layer: run custom set of tests.**
 
-Command: 
+Command: `sudo python3 fuzz.py -T -tfile tcp.csv -D 160.39.6.141 -DP 1338`
 
-Result:
+Result: the packets specified in `tcp.csv` are sent to the destination address and port.
 
 **(9) Application layer: run default set of tests. — Minor issues**
 
@@ -263,7 +261,7 @@ $ cat pattern.txt
 $ python3 run_server.py -L /tmp/log.txt
 server ready!
 Listening on port: 1338
-``` 
+```
 (-1.5)
 
 #### Fuzzer Can't read valid hex in a file 
@@ -273,7 +271,7 @@ sudo python3 fuzz.py -A -AF ./default_payload -S 127.0.0.1 -D 127.0.0.1 -DP 1338
 /tmp/log.txt
 "000
 " cannot be parsed as hex
-``` 
+```
 (-1.5)
 
 #### Running the fuzzer without sudo
